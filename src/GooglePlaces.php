@@ -12,7 +12,7 @@ class GooglePlaces
     private $response  = null;
 
     public  $keyword   = null;
-    public  $language  = 'en';
+    public  $language  = 'fr';
     public  $location  = null;
     public  $output    = 'json';
     public  $name      = null;
@@ -129,6 +129,7 @@ class GooglePlaces
                 }
             }
         }
+
         return $parameters;
     }
 
@@ -140,6 +141,7 @@ class GooglePlaces
     {
         if (!isset($parameters['pagetoken']))
         {
+
             switch ($method)
             {
                 case 'nearbysearch':
@@ -198,7 +200,12 @@ class GooglePlaces
                     }
 
                     break;
+                case 'textsearch':
 
+                        unset($parameters['rankby']);
+                        unset($parameters['sensor']);
+
+                    break;
                 case 'details':
                     if (!(isset($parameters['reference'])
                         ^ isset($parameters['placeid'])))
@@ -239,7 +246,11 @@ class GooglePlaces
             {
                 $querystring .= '&';
             }
+            // added this to remove spaces from text search
+            if(preg_match('/\s/',$value)){
 
+                $value = str_replace(' ', '+', $value);
+            }
             $querystring .= $variable . '=' . $value;
         }
 
@@ -247,6 +258,7 @@ class GooglePlaces
 
         if ($this->output == 'json')
         {
+
             $response = json_decode($response, true);
 
             if ($response === null)
